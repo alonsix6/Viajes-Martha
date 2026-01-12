@@ -5,15 +5,18 @@
 /* Global styles */
 @layer base {
   * {
-    @apply box-border transition-colors duration-200;
+    @apply box-border;
   }
 
   html {
-    @apply h-full;
+    @apply h-full scroll-smooth;
   }
 
+  /* Dark mode = Negro puro para OLED */
   body {
-    @apply h-full m-0 p-0 font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white;
+    @apply h-full m-0 p-0 font-sans antialiased
+           bg-gray-50 text-gray-900
+           dark:bg-black dark:text-white;
   }
 
   #root {
@@ -30,59 +33,172 @@
 
 /* Custom component styles */
 @layer components {
-  /* Button base styles */
+  /* Button styles - más vibrantes y con gradientes */
   .btn {
-    @apply min-h-touch px-6 py-4 rounded-lg font-semibold text-lg transition-all duration-200
-           active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply min-h-touch px-6 py-4 rounded-2xl font-semibold text-lg
+           transition-all duration-300 ease-out
+           active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
   .btn-primary {
-    @apply btn bg-primary hover:bg-turquesa-600 text-white focus:ring-primary;
+    @apply btn bg-gradient-turquesa text-white shadow-lg
+           hover:shadow-glow hover:brightness-110
+           focus:ring-turquesa-400
+           dark:shadow-glow;
   }
 
   .btn-danger {
-    @apply btn bg-danger-500 hover:bg-danger-600 text-white focus:ring-danger-500;
+    @apply btn bg-gradient-danger text-white shadow-lg
+           hover:shadow-glow-danger hover:brightness-110
+           focus:ring-danger-400;
   }
 
   .btn-outline {
-    @apply btn border-2 border-gray-300 hover:border-gray-400 text-gray-700 dark:text-gray-200 dark:border-gray-600;
+    @apply btn border-2 border-gray-200 bg-white text-gray-700
+           hover:border-turquesa-300 hover:bg-turquesa-50 hover:text-turquesa-700
+           dark:bg-dark-card dark:border-dark-border dark:text-gray-200
+           dark:hover:border-turquesa-500 dark:hover:bg-dark-elevated;
   }
 
-  /* Input base styles */
+  .btn-ghost {
+    @apply btn bg-transparent text-gray-600
+           hover:bg-gray-100
+           dark:text-gray-400 dark:hover:bg-dark-elevated;
+  }
+
+  /* Input styles - más elegantes */
   .input {
-    @apply w-full min-h-touch px-4 py-3 text-lg rounded-lg border-2 border-gray-300
-           dark:border-gray-600 dark:bg-gray-800 dark:text-white
-           focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary
-           transition-colors duration-200;
+    @apply w-full min-h-touch px-5 py-4 text-lg rounded-2xl
+           bg-white border-2 border-gray-200
+           dark:bg-dark-card dark:border-dark-border dark:text-white
+           placeholder:text-gray-400 dark:placeholder:text-gray-600
+           focus:border-turquesa-400 focus:outline-none focus:ring-4 focus:ring-turquesa-500/20
+           transition-all duration-300;
   }
 
-  /* Card styles */
+  /* Card styles - con profundidad y glassmorphism sutil */
   .card {
-    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm;
+    @apply bg-white rounded-3xl shadow-card border border-gray-100
+           dark:bg-dark-card dark:border-dark-border dark:shadow-card-dark
+           transition-all duration-300;
   }
 
-  /* Touch target - ensure minimum size for accessibility */
+  .card-elevated {
+    @apply card shadow-elevated hover:shadow-xl
+           dark:hover:border-dark-elevated;
+  }
+
+  /* Header con gradiente */
+  .header-gradient {
+    @apply bg-gradient-turquesa text-white shadow-xl;
+  }
+
+  /* Touch target - mínimo 48px para accesibilidad */
   .touch-target {
-    @apply min-h-touch min-w-touch inline-flex items-center justify-center;
+    @apply min-h-touch min-w-touch inline-flex items-center justify-center
+           rounded-xl transition-all duration-200
+           active:scale-95 hover:bg-white/10;
+  }
+
+  /* Balance display - grande y llamativo */
+  .balance-positive {
+    @apply text-turquesa-500 dark:text-turquesa-400;
+  }
+
+  .balance-negative {
+    @apply text-danger-500 dark:text-danger-400;
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply p-4 rounded-2xl bg-gray-50 dark:bg-dark-elevated
+           border border-gray-100 dark:border-dark-border;
+  }
+
+  /* Action button - botones grandes para acciones principales */
+  .action-btn {
+    @apply flex flex-col items-center justify-center gap-3 p-6
+           rounded-3xl border-2 transition-all duration-300
+           active:scale-[0.97];
+  }
+
+  .action-btn-primary {
+    @apply action-btn bg-gradient-turquesa border-transparent text-white
+           shadow-lg hover:shadow-glow;
+  }
+
+  .action-btn-secondary {
+    @apply action-btn bg-white border-gray-200 text-gray-700
+           hover:border-turquesa-300 hover:shadow-lg
+           dark:bg-dark-card dark:border-dark-border dark:text-gray-200
+           dark:hover:border-turquesa-500;
+  }
+
+  /* Modal backdrop */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm
+           flex items-center justify-center p-6 z-50
+           animate-fade-in;
+  }
+
+  .modal-content {
+    @apply bg-white dark:bg-dark-card rounded-3xl p-6 w-full max-w-md
+           shadow-2xl border border-gray-100 dark:border-dark-border
+           animate-scale-in;
+  }
+
+  /* Icon container */
+  .icon-container {
+    @apply p-4 rounded-2xl transition-colors duration-200;
+  }
+
+  .icon-container-turquesa {
+    @apply icon-container bg-turquesa-100 text-turquesa-600
+           dark:bg-turquesa-900/30 dark:text-turquesa-400;
+  }
+
+  .icon-container-danger {
+    @apply icon-container bg-danger-500/10 text-danger-500
+           dark:bg-danger-500/20 dark:text-danger-400;
+  }
+
+  /* Divider */
+  .divider {
+    @apply h-px bg-gray-200 dark:bg-dark-border my-4;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-turquesa {
+    @apply badge bg-turquesa-100 text-turquesa-700
+           dark:bg-turquesa-900/30 dark:text-turquesa-400;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-500/10 text-danger-600
+           dark:bg-danger-500/20 dark:text-danger-400;
   }
 }
 
 /* Utility classes */
 @layer utilities {
-  /* Text shadow for better readability */
   .text-shadow {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  /* Prevent text selection on buttons/interactive elements */
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
   .no-select {
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
   }
 
-  /* Safe area insets for mobile devices */
   .safe-top {
     padding-top: env(safe-area-inset-top);
   }
@@ -90,13 +206,39 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg dark:bg-black/80;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-turquesa bg-clip-text text-transparent;
+  }
 }
 
 /* Animation keyframes */
-@keyframes fadeIn {
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -104,21 +246,67 @@
   }
 }
 
-.fade-in {
-  animation: fadeIn 0.3s ease-out;
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.5);
+  }
 }
 
-/* Loading spinner */
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Loading spinner - más elegante */
 .spinner {
-  border: 3px solid rgba(6, 182, 212, 0.1);
+  border: 3px solid transparent;
   border-top: 3px solid #06B6D4;
+  border-right: 3px solid #06B6D4;
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+}
+
+/* Number animation */
+.number-animate {
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
