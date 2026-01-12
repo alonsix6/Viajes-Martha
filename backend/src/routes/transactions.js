@@ -5,16 +5,14 @@ import {
   createTransaction,
   updateTransaction,
   deleteTransaction,
-  getTransactionStats
+  getBalance,
+  getCurrentMonthStats
 } from '../controllers/transactionController.js';
 
 const router = express.Router();
 
 // GET /api/transactions - Get all transactions
 router.get('/', getAllTransactions);
-
-// GET /api/transactions/stats - Get transaction statistics
-router.get('/stats', getTransactionStats);
 
 // GET /api/transactions/:id - Get single transaction
 router.get('/:id', getTransactionById);

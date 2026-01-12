@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -8,6 +9,7 @@ export default {
     extend: {
       colors: {
         // Custom color palette
+        primary: '#06B6D4', // Alias for turquesa
         turquesa: {
           50: '#f0fdff',
           100: '#ccfbff',
@@ -27,6 +29,7 @@ export default {
       },
       fontSize: {
         // Large text sizes for seniors
+        'huge': ['3.75rem', { lineHeight: '1', fontWeight: '700' }], // 60px for balance
         'display': ['4rem', { lineHeight: '1.1', fontWeight: '700' }], // 64px
         'heading': ['2.5rem', { lineHeight: '1.2', fontWeight: '600' }], // 40px
         'title': ['2rem', { lineHeight: '1.3', fontWeight: '600' }], // 32px

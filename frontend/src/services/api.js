@@ -35,59 +35,56 @@ api.interceptors.response.use(
 );
 
 // Transaction API methods
-export const transactionAPI = {
-  // TODO: Implement API methods
-  // These will be implemented in the next phase
+export const getTransactions = async (params) => {
+  const response = await api.get('/api/transactions', { params });
+  return response.data;
+};
 
-  getAll: async () => {
-    // GET /api/transactions
-    throw new Error('Not implemented');
-  },
+export const createTransaction = async (data) => {
+  const response = await api.post('/api/transactions', data);
+  return response.data;
+};
 
-  getById: async (id) => {
-    // GET /api/transactions/:id
-    throw new Error('Not implemented');
-  },
+export const updateTransaction = async (id, data) => {
+  const response = await api.put(`/api/transactions/${id}`, data);
+  return response.data;
+};
 
-  create: async (data) => {
-    // POST /api/transactions
-    throw new Error('Not implemented');
-  },
+export const deleteTransaction = async (id) => {
+  const response = await api.delete(`/api/transactions/${id}`);
+  return response.data;
+};
 
-  update: async (id, data) => {
-    // PUT /api/transactions/:id
-    throw new Error('Not implemented');
-  },
+// Stats API methods
+export const getBalance = async () => {
+  const response = await api.get('/api/stats/balance');
+  return response.data;
+};
 
-  delete: async (id) => {
-    // DELETE /api/transactions/:id
-    throw new Error('Not implemented');
-  },
-
-  getStats: async () => {
-    // GET /api/transactions/stats
-    throw new Error('Not implemented');
-  },
+export const getCurrentMonthStats = async () => {
+  const response = await api.get('/api/stats/current-month');
+  return response.data;
 };
 
 // Settings API methods
-export const settingsAPI = {
-  // TODO: Implement API methods
+export const getSetting = async (key) => {
+  const response = await api.get(`/api/settings/${key}`);
+  return response.data;
+};
 
-  getSettings: async () => {
-    // GET /api/settings
-    throw new Error('Not implemented');
-  },
+export const updateSetting = async (key, value) => {
+  const response = await api.put(`/api/settings/${key}`, { value });
+  return response.data;
+};
 
-  verifyPin: async (pin) => {
-    // POST /api/settings/verify-pin
-    throw new Error('Not implemented');
-  },
+export const verifyPin = async (pin) => {
+  const response = await api.post('/api/settings/verify-pin', { pin });
+  return response.data;
+};
 
-  updatePin: async (oldPin, newPin) => {
-    // PUT /api/settings/pin
-    throw new Error('Not implemented');
-  },
+export const updatePin = async (oldPin, newPin) => {
+  const response = await api.put('/api/settings/pin', { oldPin, newPin });
+  return response.data;
 };
 
 export default api;

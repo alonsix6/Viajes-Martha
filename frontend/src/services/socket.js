@@ -45,15 +45,30 @@ export const disconnectSocket = () => {
   }
 };
 
-// TODO: Implement socket event listeners
-// These will be implemented in the next phase
 export const subscribeToTransactions = (callback) => {
-  // Listen for transaction:created, transaction:updated, transaction:deleted
-  // Call callback with updated data
+  const socket = getSocket();
+
+  socket.on('transaction:created', (data) => {
+    console.log('Transaction created:', data);
+    callback({ type: 'created', data });
+  });
+
+  socket.on('transaction:updated', (data) => {
+    console.log('Transaction updated:', data);
+    callback({ type: 'updated', data });
+  });
+
+  socket.on('transaction:deleted', (data) => {
+    console.log('Transaction deleted:', data);
+    callback({ type: 'deleted', data });
+  });
 };
 
 export const unsubscribeFromTransactions = () => {
-  // Remove transaction event listeners
+  const socket = getSocket();
+  socket.off('transaction:created');
+  socket.off('transaction:updated');
+  socket.off('transaction:deleted');
 };
 
 export default {

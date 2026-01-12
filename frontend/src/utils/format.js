@@ -1,56 +1,62 @@
-import { format, parseISO, formatDistance } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 /**
- * Format currency amount in Colombian Pesos
+ * Format currency amount in Soles (S/.)
  * @param {number} amount - Amount to format
  * @returns {string} Formatted currency string
  */
 export const formatCurrency = (amount) => {
-  // TODO: Implement currency formatting
-  // Format as Colombian Peso: $XX,XXX or $X,XXX,XXX
-  // Handle negative amounts for expenses
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return `S/. ${Number(amount).toFixed(2)}`;
 };
 
 /**
  * Format date for display
  * @param {string|Date} date - Date to format
- * @param {string} formatString - Format pattern (default: 'dd/MM/yyyy')
+ * @param {string} formatString - Format pattern (default: 'dd MMM')
  * @returns {string} Formatted date string
  */
-export const formatDate = (date, formatString = 'dd/MM/yyyy') => {
-  // TODO: Implement date formatting
-  // Use date-fns with Spanish locale
+export const formatDate = (date, formatString = 'dd MMM') => {
+  if (!date) return '';
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
   return format(dateObj, formatString, { locale: es });
 };
 
 /**
- * Format date with time
+ * Format month and year (e.g., "ENERO 2025")
  * @param {string|Date} date - Date to format
- * @returns {string} Formatted date and time string
+ * @returns {string} Formatted month and year string
  */
-export const formatDateTime = (date) => {
-  return formatDate(date, 'dd/MM/yyyy HH:mm');
+export const formatMonthYear = (date) => {
+  if (!date) return '';
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return format(dateObj, 'MMMM yyyy', { locale: es }).toUpperCase();
 };
 
 /**
- * Format relative time (e.g., "hace 2 horas")
- * @param {string|Date} date - Date to format
- * @returns {string} Relative time string
+ * Get current month and year
+ * @returns {object} Object with month and year properties
  */
-export const formatRelativeTime = (date) => {
+export const getCurrentMonth = () => {
+  const now = new Date();
+  return {
+    month: now.getMonth() + 1,
+    year: now.getFullYear()
+  };
+};
+
+/**
+ * Format date for input type="date"
+ * @param {string|Date} date - Date to format
+ * @returns {string} Formatted date string (YYYY-MM-DD)
+ */
+export const formatDateForInput = (date) => {
+  if (!date) {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  return formatDistance(dateObj, new Date(), {
-    addSuffix: true,
-    locale: es
-  });
+  return dateObj.toISOString().split('T')[0];
 };
 
 /**
@@ -59,18 +65,36 @@ export const formatRelativeTime = (date) => {
  * @returns {number|null} Parsed number or null if invalid
  */
 export const parseAmount = (input) => {
-  // TODO: Implement amount parsing
-  // Remove currency symbols and commas
-  // Return number or null
-  const cleaned = input.replace(/[^\d.]/g, '');
+  const cleaned = String(input).replace(/[^\d.]/g, '');
   const parsed = parseFloat(cleaned);
   return isNaN(parsed) ? null : parsed;
+};
+
+/**
+ * Group transactions by month
+ * @param {Array} transactions - Array of transactions
+ * @returns {Object} Transactions grouped by month
+ */
+export const groupByMonth = (transactions) => {
+  const grouped = {};
+
+  transactions.forEach(transaction => {
+    const monthKey = formatMonthYear(transaction.date);
+    if (!grouped[monthKey]) {
+      grouped[monthKey] = [];
+    }
+    grouped[monthKey].push(transaction);
+  });
+
+  return grouped;
 };
 
 export default {
   formatCurrency,
   formatDate,
-  formatDateTime,
-  formatRelativeTime,
+  formatMonthYear,
+  getCurrentMonth,
+  formatDateForInput,
   parseAmount,
+  groupByMonth
 };

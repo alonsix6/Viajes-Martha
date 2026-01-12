@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import pool, { initializeDatabase } from './config/database.js';
 import transactionRoutes from './routes/transactions.js';
 import settingsRoutes from './routes/settings.js';
+import { getBalance, getCurrentMonthStats } from './controllers/transactionController.js';
 
 // Load environment variables
 dotenv.config();
@@ -48,6 +49,10 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/settings', settingsRoutes);
+
+// Stats Routes
+app.get('/api/stats/balance', getBalance);
+app.get('/api/stats/current-month', getCurrentMonthStats);
 
 // 404 handler
 app.use((req, res) => {

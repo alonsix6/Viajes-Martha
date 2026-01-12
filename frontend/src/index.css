@@ -5,7 +5,7 @@
 /* Global styles */
 @layer base {
   * {
-    @apply box-border;
+    @apply box-border transition-colors duration-200;
   }
 
   html {
@@ -13,11 +13,18 @@
   }
 
   body {
-    @apply h-full m-0 p-0 font-sans antialiased bg-gray-50 text-gray-900;
+    @apply h-full m-0 p-0 font-sans antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white;
   }
 
   #root {
     @apply h-full;
+  }
+
+  /* Fix iOS zoom on input focus */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
   }
 }
 
@@ -25,32 +32,33 @@
 @layer components {
   /* Button base styles */
   .btn {
-    @apply min-h-touch min-w-touch px-6 py-3 rounded-lg font-medium transition-all duration-200
+    @apply min-h-touch px-6 py-4 rounded-lg font-semibold text-lg transition-all duration-200
            active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    @apply btn bg-turquesa-500 text-white hover:bg-turquesa-600 focus:ring-turquesa-500;
+    @apply btn bg-primary hover:bg-turquesa-600 text-white focus:ring-primary;
   }
 
   .btn-danger {
-    @apply btn bg-danger-500 text-white hover:bg-danger-600 focus:ring-danger-500;
+    @apply btn bg-danger-500 hover:bg-danger-600 text-white focus:ring-danger-500;
   }
 
-  .btn-secondary {
-    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
+  .btn-outline {
+    @apply btn border-2 border-gray-300 hover:border-gray-400 text-gray-700 dark:text-gray-200 dark:border-gray-600;
   }
 
   /* Input base styles */
   .input {
-    @apply w-full min-h-touch px-4 py-3 text-body rounded-lg border-2 border-gray-300
-           focus:border-turquesa-500 focus:outline-none focus:ring-2 focus:ring-turquesa-500
+    @apply w-full min-h-touch px-4 py-3 text-lg rounded-lg border-2 border-gray-300
+           dark:border-gray-600 dark:bg-gray-800 dark:text-white
+           focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary
            transition-colors duration-200;
   }
 
   /* Card styles */
   .card {
-    @apply bg-white rounded-xl shadow-md p-6;
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm;
   }
 
   /* Touch target - ensure minimum size for accessibility */
