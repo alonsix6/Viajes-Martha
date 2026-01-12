@@ -13,35 +13,49 @@ const poolConfig = process.env.DATABASE_URL
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 10000,
     }
   : {
       host: process.env.DB_HOST || 'localhost',
-      port: process.env.DB_PORT || 5432,
+      port: parseInt(process.env.DB_PORT) || 5432,
       database: process.env.DB_NAME || 'taxi_martha',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD,
       max: 20,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
+      connectionTimeoutMillis: 5000,
     };
+
+console.log('Database config:', {
+  using_database_url: !!process.env.DATABASE_URL,
+  ssl_enabled: process.env.NODE_ENV === 'production'
+});
 
 const pool = new Pool(poolConfig);
 
-// Test connection on startup
+// Log connection events
 pool.on('connect', () => {
-  console.log('✓ Connected to PostgreSQL database');
+  console.log('Connected to PostgreSQL database');
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  console.error('Database pool error:', err.message);
+  // Don't exit - let the application handle errors gracefully
 });
 
 // Database schema initialization (run manually or on first startup)
 export const initializeDatabase = async () => {
-  const client = await pool.connect();
+  if (!process.env.DATABASE_URL && !process.env.DB_HOST) {
+    console.warn('WARNING: No database configuration found!');
+    console.warn('Set DATABASE_URL (for Railway) or individual DB_* variables');
+    throw new Error('Database not configured');
+  }
+
+  let client;
   try {
+    client = await pool.connect();
+    console.log('Database connection successful');
+
     // Create transactions table
     await client.query(`
       CREATE TABLE IF NOT EXISTS transactions (
@@ -71,12 +85,14 @@ export const initializeDatabase = async () => {
       WHERE NOT EXISTS (SELECT 1 FROM settings);
     `);
 
-    console.log('✓ Database schema initialized');
+    console.log('Database schema initialized');
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error('Error initializing database:', error.message);
     throw error;
   } finally {
-    client.release();
+    if (client) {
+      client.release();
+    }
   }
 };
 

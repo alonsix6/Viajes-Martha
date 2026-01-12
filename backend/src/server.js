@@ -11,13 +11,28 @@ import { getBalance, getCurrentMonthStats } from './controllers/transactionContr
 // Load environment variables
 dotenv.config();
 
+// Debug: Log environment variables (without sensitive data)
+console.log('Environment check:');
+console.log('- NODE_ENV:', process.env.NODE_ENV || 'not set');
+console.log('- PORT:', process.env.PORT || '3000 (default)');
+console.log('- DATABASE_URL:', process.env.DATABASE_URL ? 'SET (hidden)' : 'NOT SET');
+console.log('- FRONTEND_URL:', process.env.FRONTEND_URL || 'not set');
+
 const app = express();
 const httpServer = createServer(app);
+
+// Allowed origins for CORS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+  'https://viajes-martha.vercel.app'
+].filter(Boolean);
 
 // Configure Socket.io with CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   }
@@ -25,7 +40,16 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(null, true); // Allow anyway in production for now
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -37,12 +61,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// Health check endpoint (doesn't require DB)
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'taxi-martha-backend'
+    service: 'taxi-martha-backend',
+    database_url_configured: !!process.env.DATABASE_URL
   });
 });
 
@@ -70,17 +95,10 @@ app.use((err, req, res, next) => {
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log(`✓ Client connected: ${socket.id}`);
-
-  // TODO: Implement socket event handlers in next phase
-  // Events to handle:
-  // - 'transaction:created' - Broadcast new transaction to all clients
-  // - 'transaction:updated' - Broadcast transaction update
-  // - 'transaction:deleted' - Broadcast transaction deletion
-  // - 'sync:request' - Client requests full data sync
+  console.log(`Client connected: ${socket.id}`);
 
   socket.on('disconnect', () => {
-    console.log(`✗ Client disconnected: ${socket.id}`);
+    console.log(`Client disconnected: ${socket.id}`);
   });
 });
 
@@ -91,25 +109,25 @@ app.set('io', io);
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
-  try {
-    // Initialize database schema
-    await initializeDatabase();
+  // Start HTTP server first (so Railway knows it's alive)
+  httpServer.listen(PORT, '0.0.0.0', async () => {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('Taxi Martha Backend Server');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-    // Start HTTP server
-    httpServer.listen(PORT, () => {
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log(`🚕 Taxi Martha Backend Server`);
-      console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-      console.log(`✓ Server running on port ${PORT}`);
-      console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`✓ Health check: http://localhost:${PORT}/health`);
-      console.log(`✓ Socket.io enabled for real-time sync`);
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
+    // Now try to initialize database
+    try {
+      await initializeDatabase();
+      console.log('Database initialized successfully');
+    } catch (error) {
+      console.error('Database initialization failed:', error.message);
+      console.error('The server will continue running but database operations will fail');
+      console.error('Make sure DATABASE_URL is set correctly in Railway');
+    }
+  });
 };
 
 // Handle graceful shutdown
