@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun, Lock, LogOut, Download, Info, Check, X } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Lock, LogOut, Download, Info, Check, X, ChevronRight, User } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { updatePin, getTransactions } from '../services/api';
 import { formatDate } from '../utils/format';
@@ -9,26 +9,23 @@ const Settings = () => {
   const navigate = useNavigate();
   const { isAdmin, isDark, toggleTheme, logout } = useApp();
 
-  // Estado para cambio de PIN
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinForm, setPinForm] = useState({ oldPin: '', newPin: '', confirmPin: '' });
   const [pinError, setPinError] = useState('');
   const [pinSuccess, setPinSuccess] = useState(false);
   const [isChangingPin, setIsChangingPin] = useState(false);
 
-  // Estado para exportar
   const [isExporting, setIsExporting] = useState(false);
   const [lastExport, setLastExport] = useState(
     localStorage.getItem('taxi_martha_last_export') || null
   );
 
-  // Cambiar PIN
   const handlePinChange = async () => {
     setPinError('');
     setPinSuccess(false);
 
     if (pinForm.newPin.length !== 6 || !/^\d+$/.test(pinForm.newPin)) {
-      setPinError('El nuevo PIN debe tener 6 dígitos');
+      setPinError('El nuevo PIN debe tener 6 digitos');
       return;
     }
 
@@ -59,18 +56,16 @@ const Settings = () => {
     }
   };
 
-  // Exportar a Excel/CSV
   const handleExport = async () => {
     setIsExporting(true);
 
     try {
       const transactions = await getTransactions();
 
-      // Crear CSV
-      const headers = ['Fecha', 'Tipo', 'Monto', 'Descripción'];
+      const headers = ['Fecha', 'Tipo', 'Monto', 'Descripcion'];
       const rows = transactions.map(t => [
         formatDate(t.date, 'dd/MM/yyyy'),
-        t.type === 'gasto' ? 'Viaje' : 'Depósito',
+        t.type === 'gasto' ? 'Viaje' : 'Deposito',
         t.amount.toFixed(2),
         t.description || ''
       ]);
@@ -80,7 +75,6 @@ const Settings = () => {
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
       ].join('\n');
 
-      // Crear y descargar archivo
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -91,7 +85,6 @@ const Settings = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      // Guardar fecha de última exportación
       const now = new Date().toISOString();
       localStorage.setItem('taxi_martha_last_export', now);
       setLastExport(now);
@@ -103,152 +96,152 @@ const Settings = () => {
     }
   };
 
-  // Cerrar sesión admin
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
+  const SettingItem = ({ icon: Icon, iconBg, title, subtitle, onClick, trailing, danger }) => (
+    <button
+      onClick={onClick}
+      className="w-full p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-dark-elevated
+               transition-colors rounded-2xl"
+    >
+      <div className={`p-3 rounded-2xl ${iconBg}`}>
+        <Icon size={24} className={danger ? 'text-danger-500' : ''} />
+      </div>
+      <div className="flex-1 text-left">
+        <p className={`font-semibold ${danger ? 'text-danger-500' : 'text-gray-800 dark:text-white'}`}>
+          {title}
+        </p>
+        {subtitle && (
+          <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
+        )}
+      </div>
+      {trailing || <ChevronRight size={20} className="text-gray-400" />}
+    </button>
+  );
+
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 safe-top safe-bottom">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-black safe-top safe-bottom">
       {/* Header */}
-      <header className="bg-turquesa-500 text-white p-6 shadow-lg flex items-center gap-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="touch-target"
-          aria-label="Volver"
-        >
-          <ArrowLeft size={28} />
-        </button>
-        <div>
-          <h1 className="text-heading font-bold">Configuración</h1>
+      <header className="header-gradient px-6 py-6 rounded-b-3xl">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="touch-target"
+            aria-label="Volver"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-white">Configuracion</h1>
+            <p className="text-sm text-white/70">
+              {isAdmin ? 'Administrador' : 'Modo Vista'}
+            </p>
+          </div>
         </div>
       </header>
 
       {/* Settings List */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* Apariencia */}
-        <section>
-          <h2 className="text-body font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+        <section className="animate-slide-up">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-1">
             Apariencia
           </h2>
-          <div className="card">
-            <button
+          <div className="card overflow-hidden">
+            <SettingItem
+              icon={isDark ? Moon : Sun}
+              iconBg="bg-turquesa-100 dark:bg-turquesa-900/30 text-turquesa-600 dark:text-turquesa-400"
+              title="Modo Oscuro"
+              subtitle={isDark ? 'Activado - OLED' : 'Desactivado'}
               onClick={toggleTheme}
-              className="w-full p-4 flex items-center justify-between"
-            >
-              <div className="flex items-center gap-4">
-                {isDark ? (
-                  <Moon size={24} className="text-turquesa-500" />
-                ) : (
-                  <Sun size={24} className="text-turquesa-500" />
-                )}
-                <div className="text-left">
-                  <h3 className="text-large font-semibold text-gray-800 dark:text-gray-200">
-                    Modo Oscuro
-                  </h3>
-                  <p className="text-small text-gray-600 dark:text-gray-400">
-                    {isDark ? 'Activado' : 'Desactivado'}
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`w-14 h-8 rounded-full p-1 transition-colors ${
-                  isDark ? 'bg-turquesa-500' : 'bg-gray-300'
-                }`}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full bg-white shadow transition-transform ${
+              trailing={
+                <div className={`w-14 h-8 rounded-full p-1 transition-colors ${
+                  isDark ? 'bg-turquesa-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  <div className={`w-6 h-6 rounded-full bg-white shadow-lg transition-transform ${
                     isDark ? 'translate-x-6' : 'translate-x-0'
-                  }`}
-                />
-              </div>
-            </button>
+                  }`} />
+                </div>
+              }
+            />
+          </div>
+        </section>
+
+        {/* Usuario */}
+        <section className="animate-slide-up" style={{ animationDelay: '0.05s' }}>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-1">
+            Usuario
+          </h2>
+          <div className="card overflow-hidden">
+            <SettingItem
+              icon={User}
+              iconBg="bg-gray-100 dark:bg-dark-elevated text-gray-600 dark:text-gray-400"
+              title="Cambiar Usuario"
+              subtitle={`Sesion como ${isAdmin ? 'Alonso' : 'Martha'}`}
+              onClick={handleLogout}
+            />
           </div>
         </section>
 
         {/* Seguridad (solo admin) */}
         {isAdmin && (
-          <section>
-            <h2 className="text-body font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+          <section className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-1">
               Seguridad
             </h2>
-            <div className="card divide-y divide-gray-200 dark:divide-gray-700">
-              <button
+            <div className="card overflow-hidden divide-y divide-gray-100 dark:divide-dark-border">
+              <SettingItem
+                icon={Lock}
+                iconBg="bg-turquesa-100 dark:bg-turquesa-900/30 text-turquesa-600 dark:text-turquesa-400"
+                title="Cambiar PIN"
+                subtitle="Actualizar codigo de acceso"
                 onClick={() => setShowPinModal(true)}
-                className="w-full p-4 flex items-center gap-4"
-              >
-                <Lock size={24} className="text-turquesa-500" />
-                <div className="text-left">
-                  <h3 className="text-large font-semibold text-gray-800 dark:text-gray-200">
-                    Cambiar PIN
-                  </h3>
-                  <p className="text-small text-gray-600 dark:text-gray-400">
-                    Actualizar código de acceso
-                  </p>
-                </div>
-              </button>
-
-              <button
+              />
+              <SettingItem
+                icon={LogOut}
+                iconBg="bg-danger-500/10 text-danger-500"
+                title="Cerrar Sesion Admin"
+                subtitle="Volver al modo vista"
                 onClick={handleLogout}
-                className="w-full p-4 flex items-center gap-4"
-              >
-                <LogOut size={24} className="text-danger-500" />
-                <div className="text-left">
-                  <h3 className="text-large font-semibold text-danger-500">
-                    Cerrar Sesión Admin
-                  </h3>
-                  <p className="text-small text-gray-600 dark:text-gray-400">
-                    Volver al modo de solo lectura
-                  </p>
-                </div>
-              </button>
+                danger
+              />
             </div>
           </section>
         )}
 
         {/* Datos */}
-        <section>
-          <h2 className="text-body font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+        <section className="animate-slide-up" style={{ animationDelay: '0.15s' }}>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-1">
             Datos
           </h2>
-          <div className="card">
-            <button
+          <div className="card overflow-hidden">
+            <SettingItem
+              icon={Download}
+              iconBg="bg-turquesa-100 dark:bg-turquesa-900/30 text-turquesa-600 dark:text-turquesa-400"
+              title="Exportar a CSV"
+              subtitle={lastExport ? `Ultima: ${formatDate(lastExport, 'dd MMM yyyy')}` : 'Nunca exportado'}
               onClick={handleExport}
-              disabled={isExporting}
-              className="w-full p-4 flex items-center gap-4"
-            >
-              <Download size={24} className="text-turquesa-500" />
-              <div className="text-left flex-1">
-                <h3 className="text-large font-semibold text-gray-800 dark:text-gray-200">
-                  Exportar a CSV
-                </h3>
-                <p className="text-small text-gray-600 dark:text-gray-400">
-                  {lastExport
-                    ? `Última: ${formatDate(lastExport, 'dd MMM yyyy')}`
-                    : 'Nunca exportado'}
-                </p>
-              </div>
-              {isExporting && <div className="spinner w-6 h-6"></div>}
-            </button>
+              trailing={isExporting ? <div className="spinner w-6 h-6"></div> : null}
+            />
           </div>
         </section>
 
         {/* Info */}
-        <section>
-          <h2 className="text-body font-semibold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
-            Información
+        <section className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 px-1">
+            Informacion
           </h2>
-          <div className="card p-4">
+          <div className="card p-5">
             <div className="flex items-center gap-4">
-              <Info size={24} className="text-turquesa-500" />
+              <div className="p-3 bg-gradient-turquesa rounded-2xl text-white">
+                <Info size={24} />
+              </div>
               <div>
-                <h3 className="text-large font-semibold text-gray-800 dark:text-gray-200">
-                  Taxi Martha
-                </h3>
-                <p className="text-small text-gray-600 dark:text-gray-400">
-                  Versión 1.0.0
-                </p>
+                <p className="font-semibold text-gray-800 dark:text-white">Taxi Martha</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Version 1.0.0</p>
               </div>
             </div>
           </div>
@@ -257,10 +250,10 @@ const Settings = () => {
 
       {/* PIN Change Modal */}
       {showPinModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md">
+        <div className="modal-backdrop">
+          <div className="modal-content">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-title font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
                 Cambiar PIN
               </h2>
               <button
@@ -270,7 +263,8 @@ const Settings = () => {
                   setPinError('');
                   setPinSuccess(false);
                 }}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-600
+                         hover:bg-gray-100 dark:hover:bg-dark-elevated transition-colors"
               >
                 <X size={24} />
               </button>
@@ -278,18 +272,19 @@ const Settings = () => {
 
             {pinSuccess ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-turquesa-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check size={32} className="text-turquesa-500" />
+                <div className="w-20 h-20 bg-turquesa-100 dark:bg-turquesa-900/30 rounded-full
+                              flex items-center justify-center mx-auto mb-4 animate-scale-in">
+                  <Check size={40} className="text-turquesa-500" />
                 </div>
-                <p className="text-large font-semibold text-turquesa-500">
-                  PIN actualizado correctamente
+                <p className="text-xl font-semibold text-turquesa-500">
+                  PIN actualizado
                 </p>
               </div>
             ) : (
               <>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-body font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
                       PIN Actual
                     </label>
                     <input
@@ -301,12 +296,12 @@ const Settings = () => {
                         setPinForm({ ...pinForm, oldPin: e.target.value.replace(/\D/g, '') })
                       }
                       placeholder="------"
-                      className="input text-center text-title tracking-widest"
+                      className="input text-center text-2xl tracking-[0.5em]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-body font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
                       Nuevo PIN
                     </label>
                     <input
@@ -318,13 +313,13 @@ const Settings = () => {
                         setPinForm({ ...pinForm, newPin: e.target.value.replace(/\D/g, '') })
                       }
                       placeholder="------"
-                      className="input text-center text-title tracking-widest"
+                      className="input text-center text-2xl tracking-[0.5em]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-body font-semibold mb-2 text-gray-700 dark:text-gray-300">
-                      Confirmar Nuevo PIN
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                      Confirmar PIN
                     </label>
                     <input
                       type="password"
@@ -335,13 +330,15 @@ const Settings = () => {
                         setPinForm({ ...pinForm, confirmPin: e.target.value.replace(/\D/g, '') })
                       }
                       placeholder="------"
-                      className="input text-center text-title tracking-widest"
+                      className="input text-center text-2xl tracking-[0.5em]"
                     />
                   </div>
                 </div>
 
                 {pinError && (
-                  <p className="text-danger-500 text-body text-center mt-4">{pinError}</p>
+                  <div className="p-4 bg-danger-500/10 border border-danger-500/20 rounded-xl mt-4 animate-scale-in">
+                    <p className="text-danger-500 text-center font-medium">{pinError}</p>
+                  </div>
                 )}
 
                 <div className="flex gap-4 mt-6">
