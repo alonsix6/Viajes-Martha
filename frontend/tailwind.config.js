@@ -36,6 +36,7 @@ export default {
       },
       fontSize: {
         'huge': ['4.5rem', { lineHeight: '1', fontWeight: '800' }],
+        'balance': ['clamp(2.5rem, 10vw, 3.5rem)', { lineHeight: '1', fontWeight: '800' }],
         'display': ['4rem', { lineHeight: '1.1', fontWeight: '700' }],
         'heading': ['2rem', { lineHeight: '1.2', fontWeight: '700' }],
         'title': ['1.75rem', { lineHeight: '1.3', fontWeight: '600' }],
