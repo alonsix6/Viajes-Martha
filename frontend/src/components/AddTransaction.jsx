@@ -187,13 +187,15 @@ const AddTransaction = () => {
                 Fecha
               </span>
             </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input"
-              required
-            />
+            <div className="relative overflow-hidden rounded-2xl">
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="input w-full box-border"
+                required
+              />
+            </div>
           </div>
 
           {/* Error Message */}

@@ -29,6 +29,19 @@
   select {
     font-size: 16px;
   }
+
+  /* Fix iOS date input - evitar desbordamiento */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    max-width: 100%;
+    min-height: 56px;
+  }
+
+  /* iOS date picker container fix */
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
 }
 
 /* Custom component styles */
@@ -77,6 +90,12 @@
            transition-all duration-300;
   }
 
+  /* Input date específico - contenido y alineado */
+  .input[type="date"] {
+    @apply pr-4;
+    line-height: 1.5;
+  }
+
   /* Card styles - con profundidad y glassmorphism sutil */
   .card {
     @apply bg-white rounded-3xl shadow-card border border-gray-100
@@ -114,6 +133,13 @@
   .stat-card {
     @apply p-4 rounded-2xl bg-gray-50 dark:bg-dark-elevated
            border border-gray-100 dark:border-dark-border;
+  }
+
+  /* Stat card grande - para mejor legibilidad */
+  .stat-card-large {
+    @apply p-5 rounded-2xl bg-white dark:bg-dark-card
+           border border-gray-100 dark:border-dark-border
+           shadow-sm;
   }
 
   /* Action button - botones grandes para acciones principales */

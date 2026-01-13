@@ -106,18 +106,18 @@ const Home = () => {
         </div>
 
         {/* Balance Card dentro del header */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
-          <p className="text-sm font-medium text-white/80 mb-2">Saldo Actual</p>
-          <div className="flex items-center gap-3">
+        <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-5 border border-white/20">
+          <div className="flex items-center gap-2 mb-1">
             {isNegative && (
-              <div className="p-2 bg-danger-500/20 rounded-xl animate-pulse">
-                <AlertCircle size={32} className="text-white" />
+              <div className="p-1.5 bg-danger-500/20 rounded-lg animate-pulse">
+                <AlertCircle size={20} className="text-white" />
               </div>
             )}
-            <p className={`text-huge font-extrabold text-white number-animate ${isNegative ? 'text-shadow-lg' : ''}`}>
-              {formatCurrency(balance)}
-            </p>
+            <p className="text-sm font-medium text-white/80">Saldo Actual</p>
           </div>
+          <p className={`text-balance font-extrabold text-white number-animate leading-none ${isNegative ? 'text-shadow-lg' : ''}`}>
+            {formatCurrency(balance)}
+          </p>
           {isNegative && (
             <p className="text-sm text-white/70 mt-2">
               Saldo negativo - se requiere deposito
@@ -142,44 +142,49 @@ const Home = () => {
           <span className="badge-turquesa">Este mes</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          {/* Depositado */}
-          <div className="stat-card">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-turquesa-100 dark:bg-turquesa-900/30 rounded-lg">
-                <TrendingUp size={16} className="text-turquesa-600 dark:text-turquesa-400" />
+        <div className="space-y-3">
+          {/* Fila 1: Depositado y Gastado */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Depositado */}
+            <div className="stat-card-large">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 bg-turquesa-100 dark:bg-turquesa-900/30 rounded-xl">
+                  <TrendingUp size={22} className="text-turquesa-600 dark:text-turquesa-400" />
+                </div>
+                <p className="text-base font-medium text-gray-500 dark:text-gray-400">Depositado</p>
               </div>
+              <p className="text-2xl font-bold text-turquesa-600 dark:text-turquesa-400">
+                {formatCurrency(stats.deposited)}
+              </p>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Depositado</p>
-            <p className="text-lg font-bold text-turquesa-600 dark:text-turquesa-400">
-              {formatCurrency(stats.deposited)}
-            </p>
+
+            {/* Gastado */}
+            <div className="stat-card-large">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-2 bg-danger-500/10 rounded-xl">
+                  <TrendingDown size={22} className="text-danger-500" />
+                </div>
+                <p className="text-base font-medium text-gray-500 dark:text-gray-400">Gastado</p>
+              </div>
+              <p className="text-2xl font-bold text-danger-500">
+                {formatCurrency(stats.spent)}
+              </p>
+            </div>
           </div>
 
-          {/* Gastado */}
-          <div className="stat-card">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-danger-500/10 rounded-lg">
-                <TrendingDown size={16} className="text-danger-500" />
+          {/* Fila 2: Viajes (ancho completo) */}
+          <div className="stat-card-large">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gray-100 dark:bg-dark-elevated rounded-xl">
+                  <Car size={22} className="text-gray-600 dark:text-gray-400" />
+                </div>
+                <p className="text-base font-medium text-gray-500 dark:text-gray-400">Viajes este mes</p>
               </div>
+              <p className="text-3xl font-bold text-gray-800 dark:text-white">
+                {stats.trips}
+              </p>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Gastado</p>
-            <p className="text-lg font-bold text-danger-500">
-              {formatCurrency(stats.spent)}
-            </p>
-          </div>
-
-          {/* Viajes */}
-          <div className="stat-card">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="p-1.5 bg-gray-100 dark:bg-dark-elevated rounded-lg">
-                <Car size={16} className="text-gray-600 dark:text-gray-400" />
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Viajes</p>
-            <p className="text-lg font-bold text-gray-800 dark:text-white">
-              {stats.trips}
-            </p>
           </div>
         </div>
       </div>
